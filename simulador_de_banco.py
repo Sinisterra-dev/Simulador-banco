@@ -12,22 +12,30 @@ class Cuenta:
 
     def depositar(self, monto):
         # Añade dinero a la cuenta y registra el movimiento
-        if monto > 0:
+        if monto <= 0:
+            print("Valor incorrexto, ingrese un valor correcto")
+            return False
+        else:
             self.saldo += monto
             self.historial.append(f"depósito {monto}")
+            return True
 
 
     def retirar(self, valor):
         # Resta dinero de la cuenta si hay fondos suficientes
+        
         if valor <= 0:
             print("Ingresa un valor a retirar válido.")
+            return False
 
         elif valor > self.saldo:
             print("Fondos insuficientes")
+            return False
 
         else:
             self.saldo -= valor
             self.historial.append(f"Retiro: {valor}")
+            return True
 
     def ver_historial(self):
         # Muestra todos los movimientos realizados en la cuenta
@@ -64,11 +72,90 @@ class Banco:
             
 
     def transferir(self, origen, destino, monto):
-        # Transfiere dinero de una cuenta a otra
+
         if origen in self.cuentas and destino in self.cuentas:
 
-            self.cuentas[origen].retirar(monto)
-            self.cuentas[destino].depositar(monto)
+            resultado = self.cuentas[origen].retirar(monto)
+
+            if resultado:
+                self.cuentas[destino].depositar(monto)
 
         else:
             print("Cuenta no encontrada")
+
+def pedir_entero(mensaje):
+    while True:
+        try:
+            return int(input(mensaje))
+        except ValueError:
+            print("Ingresa un número válido")
+
+banco = Banco()
+
+while True:
+    print("\n--- BANCO ---")
+    print("1. Crear cuenta")
+    print("2. Depositar")
+    print("3. Retirar")
+    print("4. Transferir")
+    print("5. Ver historial")
+    print("6. Salir")
+
+    opcion = input("Seleccione una opción: ")
+
+    if opcion == "1":
+
+        no_cuenta = int(input("Número de cuenta: "))
+        titular = input("Nombre del titular: ")
+        saldo = float(input("Saldo inicial: "))
+
+        banco.crear_cuenta(no_cuenta, titular, saldo)
+
+    elif opcion == "2":
+
+        no_cuenta = int(input("Número de cuenta: "))
+        monto = float (input("Cantidad a ingresar:"))
+
+        banco.depositar(no_cuenta, monto)
+    
+    elif opcion == "3":
+
+        no_cuenta = int(input("Número de cuenta: "))
+        monto = float (input("Cantidad a retirar:"))
+
+        banco.retirar(no_cuenta, monto)
+    
+    elif opcion == "4":
+
+        origen = int(input("Cuenta origen: "))
+        destino = int(input("Cuenta destino: "))
+        monto = float(input("Monto a transferir: "))
+
+        banco.transferir(origen,destino,monto)
+
+    elif opcion == "5":
+
+        no_cuenta = int(input("Número de cuenta: "))
+        if no_cuenta in banco.cuentas:
+            banco.cuentas[no_cuenta].ver_historial()
+    
+        else:
+            print("Número de cuenta no encontrada")
+
+        
+
+        
+    
+    elif opcion == "6":
+
+        print("Saliendo del sistema...")
+        break
+
+    else:
+        print("Número inválido ")
+
+
+
+    
+
+
